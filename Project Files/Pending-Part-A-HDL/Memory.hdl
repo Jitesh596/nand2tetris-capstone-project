@@ -1,0 +1,25 @@
+/**
+ * Hack memory map for Nand2Tetris Project 5.
+ * 0x0000-0x3FFF: RAM16K
+ * 0x4000-0x5FFF: Screen
+ * 0x6000:        Keyboard (read-only)
+ */
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    // Decode address[14..13] to select RAM, Screen or Keyboard.
+    DMux4Way(in=load, sel=address[13..14],
+             a=loadRAMLow, b=loadRAMHigh,
+             c=loadScreen, d=loadKeyboard);
+    Or(a=loadRAMLow, b=loadRAMHigh, out=loadRAM);
+
+    RAM16K(in=in, load=loadRAM, address=address[0..13], out=ramOut);
+    Screen(in=in, load=loadScreen, address=address[0..12], out=screenOut);
+    Keyboard(out=keyboardOut);
+
+    // address[13..14] gives: 00/01=RAM, 10=Screen, 11=Keyboard.
+    Mux4Way16(a=ramOut, b=ramOut, c=screenOut, d=keyboardOut,
+              sel=address[13..14], out=out);
+}

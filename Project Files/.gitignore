@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+.vscode/.ropeproject/
+.DS_Store
+Thumbs.db

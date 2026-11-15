@@ -3,8 +3,25 @@ TEACHER-REQUIRED FOLDER STRUCTURE
 3. Capstone Project/
   YourName_YourRollNo_ProjectReport_TEMPLATE.pdf
   Project Files/
-    (all current project files)
-    Pending-Part-A-HDL/  [empty until you add your own HDL files]
-    Pending-Part-C-Box/  [empty until you finish Box.asm and Box.hack]
+    assembler.py
+    project_config.py
+    Pending-Part-A-HDL/
+      CPU.hdl
+      Memory.hdl
+      Computer.hdl
+    Pending-Part-C-Box/
+      generate_box.py
 
-IMPORTANT: This ZIP is a correctly structured working package, not a finished university submission. The report is a marked template and must be completed. Do not submit it unchanged. See Project Files/README.md.
+WHAT IS INCLUDED
+- Part A now contains CPU.hdl, Memory.hdl and Computer.hdl starter implementations.
+- Part B contains the two-pass Python assembler and a small smoke test.
+- Part C contains a generator that creates the K-specific Box.asm and Box.hack after you enter your own K.
+
+WHAT YOU STILL MUST DO
+- Set K to the last two digits of your own roll number in project_config.py.
+- Run all five official HDL tests and save real screenshots.
+- Compare the assembler against Add.asm, Max.asm, Rect.asm and Pong.asm using the official assembler.
+- Run Pending-Part-C-Box/generate_box.py to create your personalized Box.asm and Box.hack, then test in the official CPU Emulator.
+- Complete and rename the report PDF with your real details and screenshots.
+
+This package is not represented as a fully verified final submission. Read Project Files/README.md for commands and further instructions.

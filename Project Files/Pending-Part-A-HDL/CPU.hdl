@@ -1,0 +1,48 @@
+/**
+ * Hack CPU implementation for Nand2Tetris Project 5.
+ * Uses the standard ARegister, DRegister, ALU, Mux16, gates and PC chips.
+ */
+CHIP CPU {
+    IN inM[16], instruction[16], reset;
+    OUT outM[16], writeM, addressM[15], pc[15];
+
+    PARTS:
+    // An A-instruction loads the instruction value into A.
+    // A C-instruction with destination A loads the ALU result into A.
+    Not(in=instruction[15], out=isAInstruction);
+    Mux16(a=outM, b=instruction, sel=isAInstruction, out=aInput);
+    And(a=instruction[15], b=instruction[5], out=loadAFromC);
+    Or(a=isAInstruction, b=loadAFromC, out=loadA);
+    ARegister(in=aInput, load=loadA, out=A, out[0..14]=addressM);
+
+    // D is loaded only by a C-instruction whose destination includes D.
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=outM, load=loadD, out=D);
+
+    // The a-bit selects A (0) or the memory input M (1) as the ALU y-input.
+    Mux16(a=A, b=inM, sel=instruction[12], out=aluY);
+    ALU(
+        x=D, y=aluY,
+        zx=instruction[11], nx=instruction[10],
+        zy=instruction[9],  ny=instruction[8],
+        f=instruction[7],   no=instruction[6],
+        out=outM, zr=zr, ng=ng
+    );
+
+    // Write to memory only for a C-instruction with destination M.
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // Decode the three jump bits using the ALU's zero and negative flags.
+    Not(in=zr, out=notZero);
+    Not(in=ng, out=notNegative);
+    And(a=notNegative, b=notZero, out=isPositive);
+    And(a=instruction[2], b=isPositive, out=takeJGT);
+    And(a=instruction[1], b=zr,         out=takeJEQ);
+    And(a=instruction[0], b=ng,         out=takeJLT);
+    Or(a=takeJGT, b=takeJEQ, out=jumpGTorEQ);
+    Or(a=jumpGTorEQ, b=takeJLT, out=jumpCondition);
+    And(a=instruction[15], b=jumpCondition, out=loadPC);
+
+    PC(in=A, load=loadPC, inc=true, reset=reset,
+       out=pcFull, out[0..14]=pc);
+}
